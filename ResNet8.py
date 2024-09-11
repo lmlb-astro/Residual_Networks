@@ -1,6 +1,8 @@
 import tensorflow as tf
 from tensorflow.keras.layers import Flatten
 
+import Residual_block2 as resbl
+
 
 ## A Residual network with 8 layers
 ## Designed for input shape (128, 128, _)
@@ -18,13 +20,13 @@ class ResNet8(tf.keras.Model):
         self.mp1 = tf.keras.layers.MaxPool2D(pool_size = (2, 2)) ## gives: (64, 64, filters[0])
         
         ## initialize the residual blocks with max pooling
-        self.res1 = ResBlock2(filters = filters[1], kernel_size = (3, 3))
+        self.res1 = resbl.ResBlock2(filters = filters[1], kernel_size = (3, 3))
         self.mp2 = tf.keras.layers.MaxPool2D(pool_size = (2, 2)) ## gives (32, 32, filters[1])
         
-        self.res2 = ResBlock2(filters = filters[2], kernel_size = (3, 3))
+        self.res2 = resbl.ResBlock2(filters = filters[2], kernel_size = (3, 3))
         self.mp3 = tf.keras.layers.MaxPool2D(pool_size = (2, 2)) ## gives (16, 16, filters[2])
         
-        self.res3 = ResBlock2(filters = filters[3], kernel_size = (3, 3))
+        self.res3 = resbl.ResBlock2(filters = filters[3], kernel_size = (3, 3))
         self.mp4 = tf.keras.layers.MaxPool2D(pool_size = (2, 2)) ## gives (8, 8, filters[3])
         
         ## dropout layer

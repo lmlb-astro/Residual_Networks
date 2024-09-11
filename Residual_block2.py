@@ -1,5 +1,4 @@
 import tensorflow as tf
-from tensorflow.keras.layers import Flatten
 
 
 ## Class that creates Residual network block with 2 convolutional layers
