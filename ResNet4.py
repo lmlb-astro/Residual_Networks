@@ -8,6 +8,7 @@ import Residual_block2 as resbl
 
 
 ## A Residual network with 4 layers
+@keras.saving.register_keras_serializable(package="MyLayers")
 class ResNet4(tf.keras.Model):
     
     def __init__(self, num_out, filters = [16, 32], drop_rate = 0.25, act_out = 'softmax', fl_type = 'float32', **kwargs):
