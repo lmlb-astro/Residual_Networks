@@ -1,4 +1,5 @@
 import tensorflow as tf
+import keras
 from tensorflow.keras.layers import Flatten
 
 import Residual_block2 as resbl
@@ -15,6 +16,10 @@ class ResNet4(tf.keras.Model):
         ## verify the number of filters provided
         if len(filters) != 2: raise AttributeError('The length of the filters list has to be 2, containing only integers.')
         
+        ## store the input parameters
+        self.num_out = num_out
+        self.filters = filters
+        
         ## initialize the first convolutional layer, batch normalization and max pool layer
         self.conv1 = tf.keras.layers.Conv2D(filters = filters[0], kernel_size = (5,5), strides = (1, 1), padding = 'SAME')
         self.bn1 = tf.keras.layers.BatchNormalization()
@@ -30,6 +35,16 @@ class ResNet4(tf.keras.Model):
         ## flatten and final dense layers
         self.flatten = Flatten(dtype = fl_type)
         self.d1 = tf.keras.layers.Dense(num_out, activation = act_out)
+        
+        
+        
+    def get_config(self):
+        base_config = super().get_config()
+        sub_config = {"num_out": self.num_out, 
+                      "filters": self.filters
+                     }
+        
+        return {**base_config, **sub_config}
         
         
     ## call on the model

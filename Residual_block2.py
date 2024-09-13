@@ -1,10 +1,13 @@
 import tensorflow as tf
+import keras
 
 
 ## Class that creates Residual network block with 2 convolutional layers
 
 
+
 ## Residual block with 2 convolutional layers
+@keras.saving.register_keras_serializable(package="MyLayers")
 class ResBlock2(tf.keras.layers.Layer):
     
     def __init__(self, filters = 4, kernel_size = (3, 3), use_bias = False, **kwargs):
@@ -26,9 +29,15 @@ class ResBlock2(tf.keras.layers.Layer):
         ## add the elementwise addition layer to complete the residual block
         self.add_layer = tf.keras.layers.Add()
     
+    
+    def get_config(self):
+        base_config = super().get_config()
+        sub_config = {}
+        
+        return {**base_config, **sub_config}
 
     
-    ## call ResBlock2()
+    ## call of ResBlock2()
     def call(self, inputs):
         ## first convolutional layer + normalization + activation
         x = self.conv1(inputs)
@@ -48,3 +57,8 @@ class ResBlock2(tf.keras.layers.Layer):
 
         ## return the output of the residual block after element-wise addition
         return self.relu2(self.add_layer([inputs, x]))
+
+
+
+
+

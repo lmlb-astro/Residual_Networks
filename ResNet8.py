@@ -1,11 +1,12 @@
 import tensorflow as tf
+import keras
 from tensorflow.keras.layers import Flatten
 
 import Residual_block2 as resbl
 
 
 ## A Residual network with 8 layers
-## Designed for input shape (128, 128, _)
+@keras.saving.register_keras_serializable(package="MyLayers")
 class ResNet8(tf.keras.Model):
     
     def __init__(self, num_out, filters = [16, 32, 64, 128], drop_rate = 0.25, act_out = 'softmax', fl_type = 'float32', **kwargs):
@@ -14,29 +15,45 @@ class ResNet8(tf.keras.Model):
         ## verify the number of filters provided
         if len(filters) != 4: raise AttributeError('The length of the filters list has to be 4, containing only integers.')
         
+        ## store the input parameters
+        self.num_out = num_out
+        self.filters = filters
+        
+        
         ## initialize the first convolutional layer, batch normalization and max pool layer
-        self.conv1 = tf.keras.layers.Conv2D(filters = filters[0], kernel_size = (5,5), strides = (1, 1), padding = 'SAME')
+        self.conv1 = tf.keras.layers.Conv2D(filters = self.filters[0], kernel_size = (5,5), strides = (1, 1), padding = 'SAME')
         self.bn1 = tf.keras.layers.BatchNormalization()
-        self.mp1 = tf.keras.layers.MaxPool2D(pool_size = (2, 2)) ## gives: (64, 64, filters[0])
+        self.mp1 = tf.keras.layers.MaxPool2D(pool_size = (2, 2)) 
         
         ## initialize the residual blocks with max pooling
-        self.res1 = resbl.ResBlock2(filters = filters[1], kernel_size = (3, 3))
-        self.mp2 = tf.keras.layers.MaxPool2D(pool_size = (2, 2)) ## gives (32, 32, filters[1])
+        self.res1 = resbl.ResBlock2(filters = self.filters[1], kernel_size = (3, 3))
+        self.mp2 = tf.keras.layers.MaxPool2D(pool_size = (2, 2)) 
         
-        self.res2 = resbl.ResBlock2(filters = filters[2], kernel_size = (3, 3))
-        self.mp3 = tf.keras.layers.MaxPool2D(pool_size = (2, 2)) ## gives (16, 16, filters[2])
+        self.res2 = resbl.ResBlock2(filters = self.filters[2], kernel_size = (3, 3))
+        self.mp3 = tf.keras.layers.MaxPool2D(pool_size = (2, 2)) 
         
-        self.res3 = resbl.ResBlock2(filters = filters[3], kernel_size = (3, 3))
-        self.mp4 = tf.keras.layers.MaxPool2D(pool_size = (2, 2)) ## gives (8, 8, filters[3])
+        self.res3 = resbl.ResBlock2(filters = self.filters[3], kernel_size = (3, 3))
+        self.mp4 = tf.keras.layers.MaxPool2D(pool_size = (2, 2))
         
         ## dropout layer
         self.drop1 = tf.keras.layers.Dropout(drop_rate)
         
         ## flatten and final dense layers
         self.flatten = Flatten(dtype = fl_type)
-        self.d1 = tf.keras.layers.Dense(num_out, activation = act_out)
+        self.d1 = tf.keras.layers.Dense(self.num_out, activation = act_out)
         
         
+        
+    def get_config(self):
+        base_config = super().get_config()
+        sub_config = {"num_out": self.num_out, 
+                      "filters": self.filters
+                     }
+        
+        return {**base_config, **sub_config}
+        
+     
+    
     ## call on the model
     def call(self, inputs):
         ## first convolutional layer
@@ -60,3 +77,7 @@ class ResNet8(tf.keras.Model):
         
         ## feed-forward
         return self.d1(x)
+
+
+
+
