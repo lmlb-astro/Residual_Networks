@@ -18,6 +18,9 @@ class ResNet8(tf.keras.Model):
         ## store the input parameters
         self.num_out = num_out
         self.filters = filters
+        self.drop_rate = drop_rate
+        self.act_out = act_out
+        self.fl_type = fl_type
         
         
         ## initialize the first convolutional layer, batch normalization and max pool layer
@@ -36,18 +39,21 @@ class ResNet8(tf.keras.Model):
         self.mp4 = tf.keras.layers.MaxPool2D(pool_size = (2, 2))
         
         ## dropout layer
-        self.drop1 = tf.keras.layers.Dropout(drop_rate)
+        self.drop1 = tf.keras.layers.Dropout(self.drop_rate)
         
         ## flatten and final dense layers
-        self.flatten = Flatten(dtype = fl_type)
-        self.d1 = tf.keras.layers.Dense(self.num_out, activation = act_out)
+        self.flatten = Flatten(dtype = self.fl_type)
+        self.d1 = tf.keras.layers.Dense(self.num_out, activation = self.act_out)
         
         
         
     def get_config(self):
         base_config = super().get_config()
         sub_config = {"num_out": self.num_out, 
-                      "filters": self.filters
+                      "filters": self.filters,
+                      "drop_rate": self.drop_rate,
+                      "act_out": self.act_out,
+                      "fl_type": self.fl_type
                      }
         
         return {**base_config, **sub_config}

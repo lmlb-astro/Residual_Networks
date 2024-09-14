@@ -13,10 +13,15 @@ class ResBlock2(tf.keras.layers.Layer):
     def __init__(self, filters = 4, kernel_size = (3, 3), use_bias = False, **kwargs):
         ## initialize the parent class
         super(ResBlock2, self).__init__(**kwargs)
+        
+        ## store the input
+        self.filters = filters
+        self.kernel_size = kernel_size
+        self.use_bias = use_bias
 
         ## initialize the two convolutional layers
-        self.conv1 = tf.keras.layers.Conv2D(filters = filters, kernel_size = kernel_size, strides = (1, 1), padding = 'SAME', use_bias = use_bias)
-        self.conv2 = tf.keras.layers.Conv2D(filters = filters, kernel_size = kernel_size, strides = (1, 1), padding = 'SAME', use_bias = use_bias)
+        self.conv1 = tf.keras.layers.Conv2D(filters = self.filters, kernel_size = self.kernel_size, strides = (1, 1), padding = 'SAME', use_bias = self.use_bias)
+        self.conv2 = tf.keras.layers.Conv2D(filters = self.filters, kernel_size = self.kernel_size, strides = (1, 1), padding = 'SAME', use_bias = self.use_bias)
 
         ## initialize the batch normalization layers
         self.batch_norm1 = tf.keras.layers.BatchNormalization()
@@ -32,7 +37,10 @@ class ResBlock2(tf.keras.layers.Layer):
     
     def get_config(self):
         base_config = super().get_config()
-        sub_config = {}
+        sub_config = {"filters": self.filters,
+                      "kernel_size": self.kernel_size,
+                      "use_bias": self.use_bias
+                     }
         
         return {**base_config, **sub_config}
 
