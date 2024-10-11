@@ -25,7 +25,7 @@ class ResNet4(tf.keras.Model):
         self.fl_type = fl_type
         
         ## initialize the first convolutional layer, batch normalization and max pool layer
-        self.conv1 = tf.keras.layers.Conv2D(filters = self.filters[0], kernel_size = (5,5), strides = (1, 1), padding = 'SAME')
+        self.conv1 = tf.keras.layers.Conv2D(filters = self.filters[0], kernel_size = (7, 7), strides = (1, 1), padding = 'SAME')
         self.bn1 = tf.keras.layers.BatchNormalization()
         self.mp1 = tf.keras.layers.MaxPool2D(pool_size = (2, 2))
         
